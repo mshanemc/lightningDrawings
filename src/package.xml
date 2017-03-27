@@ -37,6 +37,14 @@
         <name>FlexiPage</name>
     </types>
     <types>
+        <members>*</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>FlowDefinition</name>
+    </types>
+    <types>
         <members>Contest__c-Contest Layout</members>
         <members>Prize__c-Prize Layout</members>
         <name>Layout</name>

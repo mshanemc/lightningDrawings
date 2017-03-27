@@ -47,6 +47,7 @@
     <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
     <enableActivities>false</enableActivities>
     <enableBulkApi>false</enableBulkApi>
     <enableFeeds>false</enableFeeds>
@@ -57,6 +58,7 @@
     <enableStreamingApi>false</enableStreamingApi>
     <fields>
         <fullName>Description__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Description</label>
         <length>32768</length>
@@ -67,6 +69,7 @@
     </fields>
     <fields>
         <fullName>Entries__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Entries</label>
         <summaryForeignKey>Entry__c.Contest__c</summaryForeignKey>
@@ -77,6 +80,7 @@
     </fields>
     <fields>
         <fullName>Planned_Drawing_Time__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Planned Drawing Time</label>
         <required>false</required>
@@ -86,6 +90,7 @@
     </fields>
     <fields>
         <fullName>Rules__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Rules</label>
         <length>32768</length>
@@ -96,6 +101,7 @@
     </fields>
     <fields>
         <fullName>Start_Accepting_Entries__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Start Accepting Entries</label>
         <required>false</required>
@@ -105,6 +111,7 @@
     </fields>
     <fields>
         <fullName>Stop_Accepting_Entries__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Stop Accepting Entries</label>
         <required>false</required>
@@ -114,6 +121,7 @@
     </fields>
     <fields>
         <fullName>Total_Prize_Value__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Total Prize Value</label>
         <summarizedField>Prize__c.Total_Value__c</summarizedField>
@@ -125,6 +133,7 @@
     </fields>
     <fields>
         <fullName>Total_Prizes__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Total Prizes</label>
         <summarizedField>Prize__c.Quantity__c</summarizedField>

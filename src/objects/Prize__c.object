@@ -47,6 +47,7 @@
     <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
     <enableActivities>false</enableActivities>
     <enableBulkApi>false</enableBulkApi>
     <enableFeeds>false</enableFeeds>
@@ -58,6 +59,7 @@
     <fields>
         <fullName>Awarded__c</fullName>
         <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Awarded</label>
         <trackTrending>false</trackTrending>
@@ -65,6 +67,7 @@
     </fields>
     <fields>
         <fullName>Contest__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Contest</label>
         <referenceTo>Contest__c</referenceTo>
@@ -78,6 +81,7 @@
     </fields>
     <fields>
         <fullName>Prize_Image__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Prize Image</label>
         <required>false</required>
@@ -86,6 +90,7 @@
     </fields>
     <fields>
         <fullName>Quantity__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Quantity</label>
         <precision>18</precision>
@@ -97,6 +102,7 @@
     </fields>
     <fields>
         <fullName>Total_Value__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <formula>Quantity__c *  Value__c</formula>
         <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
@@ -109,6 +115,7 @@
     </fields>
     <fields>
         <fullName>Value__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Value</label>
         <precision>18</precision>

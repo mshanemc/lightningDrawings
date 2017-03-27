@@ -43,6 +43,7 @@
     <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
     <enableActivities>false</enableActivities>
     <enableBulkApi>false</enableBulkApi>
     <enableFeeds>false</enableFeeds>
@@ -54,6 +55,7 @@
     <fields>
         <fullName>Contact__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Contact</label>
         <referenceTo>Contact</referenceTo>
@@ -65,6 +67,7 @@
     </fields>
     <fields>
         <fullName>Contest__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Contest</label>
         <referenceTo>Contest__c</referenceTo>
@@ -78,6 +81,7 @@
     </fields>
     <fields>
         <fullName>Entrant_Name__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <formula>if (
   !ISBLANK(User__c),
@@ -101,6 +105,7 @@
     </fields>
     <fields>
         <fullName>Free_Name__c</fullName>
+        <deprecated>false</deprecated>
         <description>Put anything here--it doesn&apos;t have to be a user, lead, or contact</description>
         <externalId>false</externalId>
         <inlineHelpText>Put anything here--it doesn&apos;t have to be a user, lead, or contact</inlineHelpText>
@@ -114,6 +119,7 @@
     <fields>
         <fullName>Lead__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Lead</label>
         <referenceTo>Lead</referenceTo>
@@ -126,6 +132,7 @@
     <fields>
         <fullName>Prize_Won__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Prize Won</label>
         <referenceTo>Prize__c</referenceTo>
@@ -137,6 +144,7 @@
     </fields>
     <fields>
         <fullName>Sequence_Number__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Sequence Number</label>
         <precision>18</precision>
@@ -149,6 +157,7 @@
     <fields>
         <fullName>User__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>User</label>
         <referenceTo>User</referenceTo>
