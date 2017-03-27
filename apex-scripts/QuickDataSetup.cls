@@ -25,23 +25,29 @@ insert contests;
 list<drawings__prize__c> prizes = new list<drawings__prize__c>();
 
 for (drawings__contest__c cont:contests){
+
   drawings__prize__c prize = new drawings__prize__c();
   prize.Name = 'Grand Prize';
   prize.drawings__Quantity__c = 1;
   prize.drawings__Contest__c = cont.Id;
   prize.drawings__Value__c = 10000;
+  prize.drawings__Prize_Image__c = 'http://ohfact.1ygkv60km.netdna-cdn.com/wp-content/uploads/2016/06/science-all.jpg';
   prizes.add(prize);
+
   prize = new drawings__prize__c();
   prize.Name = '2nd Prize';
   prize.drawings__Quantity__c = 3;
   prize.drawings__Contest__c = cont.Id;
   prize.drawings__Value__c = 500;
+  prize.drawings__Prize_Image__c = 'http://c.shld.net/rpx/i/s/i/spin/10117770/prod_1401193812??hei=64&wid=64&qlt=50';
   prizes.add(prize);
+
   prize = new drawings__prize__c();
   prize.Name = '3rd Prize';
   prize.drawings__Quantity__c = 10;
   prize.drawings__Contest__c = cont.Id;
   prize.drawings__Value__c = 50;
+  prize.drawings__Prize_Image__c = 'https://us.v-cdn.net/5017260/uploads/FileUpload/de/d6ff97e1a6ceb026912ef0dd405711.jpg';
   prizes.add(prize);
 }
 
