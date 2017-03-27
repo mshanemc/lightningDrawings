@@ -1,4 +1,4 @@
-list<drawings__prize__c> prizes = [select id, drawings__contest__c, drawings__awarded__c from prize__c where drawings__awarded__c = true];
+list<drawings__prize__c> prizes = [select id, drawings__contest__c, drawings__awarded__c from drawings__prize__c where drawings__awarded__c = true];
 for (drawings__prize__c p: prizes){
 	p.drawings__awarded__c = false;
 }
