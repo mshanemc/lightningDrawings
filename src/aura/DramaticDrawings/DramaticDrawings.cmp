@@ -1,0 +1,23 @@
+<aura:component controller="Drawings">
+	<ltng:require scripts="{!join(',', $Resource.d3, $Resource.lodash)}" afterScriptsLoaded="{!c.doInit}"/>
+
+
+	<aura:attribute name="duration" type="integer" required="true" access="global" default="25"/>
+
+	<aura:attribute name="prizeId" type="string" required="true" access="global"/>
+	<aura:attribute name="prize" type="object" access="private"/>
+	<aura:attribute name="awarded" type="boolean" default="false" access="private"/>
+
+	<aura:handler event="aura:locationChange" action="{!c.destoryCmp}"/>
+
+	<c:LightningErrorHandler />
+
+	<div class="dramatic">
+		<div class="slds-text-heading--large slds-p-around--large">{!v.prize.Name}</div>
+		<aura:if isTrue="{!v.awarded}">
+			<lightning:button variant="neutral" label="Return to Prize Page" onclick="{! c.navToRecord }" class="navButton slds-m-around--large"/>
+		</aura:if>
+	</div>
+
+
+</aura:component>

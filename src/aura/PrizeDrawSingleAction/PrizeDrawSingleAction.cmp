@@ -1,0 +1,7 @@
+<aura:component controller="Drawings" implements="force:LightningQuickActionWithoutHeader,force:hasRecordId">
+
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+	<c:LightningErrorHandler />
+
+</aura:component>
