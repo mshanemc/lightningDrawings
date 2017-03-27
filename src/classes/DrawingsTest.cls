@@ -21,7 +21,6 @@ private class DrawingsTest {
 
 	}
 
-
 	@isTest static void testRandom(){
 		// 	private static integer randBetween (integer lowest, integer highest){
 
@@ -54,18 +53,83 @@ private class DrawingsTest {
 		system.assertEquals(winner.Prize_Won__c, prizes[0].id);
 	}
 
-  @isTest static void testDrawLocalSingle(){
+  @isTest static void testDrawLocalSingleBigPile(){
   	list<prize__c> prizes = [select id, contest__c, Quantity__c from prize__c];
   	integer unawarded = drawings.unawardedCount(prizes[0].contest__c);
+  	system.assert(unawarded>2100);
 
   	list<entry__c> potentialWinners = (list<entry__c>)JSON.deserialize(drawings.drawLocallySingle(prizes[0].id), list<entry__c>.class);
 
-  	if (unawarded>1000){
-  		//no more than 1000 potential winners.  400 < unawarded < 4000
-  		system.assertEquals(potentialWinners.size(), 1000);
-  	} else {
-  		system.assertEquals(potentialWinners.size(), unawarded);
+  	system.assertEquals(potentialWinners.size(), 1000);
+  }
+
+
+
+  @isTest static void testDrawLocalSingleSmallPile(){
+  	list<prize__c> prizes = [select id, contest__c, Quantity__c from prize__c];
+  	//let's make a smaller batch of prizes
+  	test.startTest();
+  	delete [select id from entry__c where contest__c =: prizes[0].contest__c];
+
+  	integer sequencer = 1;
+
+  	list<entry__c> entries = new list<entry__c>();
+  	for (user u:[select id from user]){
+  		for (integer k=0; k<2; k++){
+  			entry__c e = new entry__c();
+				e.User__c = u.Id;
+				e.Contest__c = prizes[0].contest__c;
+				e.Sequence_Number__c = sequencer;
+				entries.add(e);
+				sequencer++;
+  		}
   	}
+
+  	insert entries;
+  	test.stopTest();
+  	//then resequence the new entries
+  	//DrawingsDataPrep.numberStuff(prizes[0].contest__c);
+
+
+  	integer unawarded = drawings.unawardedCount(prizes[0].contest__c);
+  	system.assert(unawarded<1000);
+
+  	list<entry__c> potentialWinners = (list<entry__c>)JSON.deserialize(drawings.drawLocallySingle(prizes[0].id), list<entry__c>.class);
+  	system.assertEquals(potentialWinners.size(), unawarded);
+
+  }
+
+  @isTest static void testDrawLocalSingleMediumPile(){
+  	list<prize__c> prizes = [select id, contest__c, Quantity__c from prize__c];
+  	//let's make a smaller batch of prizes
+  	test.startTest();
+  	delete [select id from entry__c where contest__c =: prizes[0].contest__c];
+
+  	list<entry__c> entries = new list<entry__c>();
+  	integer sequencer = 1;
+  	for (user u:[select id from user]){
+  		for (integer k=0; k<4; k++){
+  			entry__c e = new entry__c();
+				e.User__c = u.Id;
+				e.Contest__c = prizes[0].contest__c;
+				e.Sequence_Number__c = sequencer;
+				entries.add(e);
+				sequencer++;
+  		}
+  	}
+
+  	insert entries;
+  	//then resequence the new entries
+  	//DrawingsDataPrep.numberStuff(prizes[0].contest__c);
+  	test.stopTest();
+
+
+  	integer unawarded = drawings.unawardedCount(prizes[0].contest__c);
+  	system.assert(unawarded>1000);
+  	system.assert(unawarded<2000);
+
+  	list<entry__c> potentialWinners = (list<entry__c>)JSON.deserialize(drawings.drawLocallySingle(prizes[0].id), list<entry__c>.class);
+  	system.assertEquals(potentialWinners.size(), 1000);
 
   }
 
@@ -203,19 +267,23 @@ private class DrawingsTest {
 
 		list<user> users = createUsers(400);
 
+		//there will be 4000 of these
 		list<entry__c> entries = new list<entry__c>();
+		integer sequencer = 1;
 		for (user u:users){
-			for (integer k = 0; k<Math.round(Math.random()*10); k++){
+			for (integer k = 0; k<10; k++){
 				entry__c e = new entry__c();
 				e.User__c = u.Id;
 				e.Contest__c = cont.Id;
+				e.Sequence_Number__c = sequencer;
 				entries.add(e);
+				sequencer++;
 			}
 		}
 		insert entries;
 
-		integer numberingResult = DrawingsDataPrep.numberStuff(cont.Id);
-		system.assertEquals(numberingResult, 0);
+		//integer numberingResult = DrawingsDataPrep.numberStuff(cont.Id);
+		//system.assertEquals(numberingResult, 0);
 
 	}
 

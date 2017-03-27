@@ -37,6 +37,9 @@ global with sharing class Drawings {
 
 	@AuraEnabled
 	global static string drawLocallySingle(string prizeId){
+		//we'll return this!
+		list<entry__c> potentialWinners = new list<entry__c>();
+
 		prize__c prize = getPrize(prizeId);
 
 		integer prizesLeft = remainingPrizes(prize.Id, integer.valueOf(prize.Quantity__c), prize.Contest__c);
@@ -46,32 +49,70 @@ global with sharing class Drawings {
 		}
 
 		integer entryCount = unawardedCount(prize.contest__c);
-		set<integer> winnerKeys = new set<integer>();
 
-		integer targetEntries = math.Min(1000, entryCount);
-		system.debug(targetEntries);
+		//handling the sampling algorithm...additive or subtractative?
+		if (entryCount > 1000){ //There needs to be some gap between the 1200 and 900 otherwise you'll never get a good set of keys to finish
+			integer targetEntries = math.Min(1000, entryCount);
 
-		set<integer> existingWinners = getExistingWinnerKeys(prize.Contest__c);
+			if (entryCount > 2* targetEntries){
+				//there's a TON of entries.  Let's build up the winner key list from zero
 
-		do {
-			winnerKeys.add(getWinnerKey(entryCount, existingWinners));
-		} while (winnerKeys.size()<targetEntries);
+				set<integer> winnerKeys = new set<integer>();
+				system.debug(targetEntries);
+				set<integer> existingWinners = getExistingWinnerKeys(prize.Contest__c);
 
-		system.debug('winner key count :' + winnerKeys.size());
+				do {
+					winnerKeys.add(getWinnerKey(entryCount, existingWinners));
+				} while (winnerKeys.size()<targetEntries);
 
-		list<entry__c> winnersWithPics = [select id, Entrant_Name__c, User__r.SmallPhotoUrl, User__r.MediumPhotoUrl, Prize_Won__c from entry__c where contest__c =: prize.contest__c and Sequence_Number__c in: winnerKeys and Prize_Won__c = null and User__c != null and isDeleted=false];
-		list<entry__c> winnersWithoutPics = [select id, Entrant_Name__c, Prize_Won__c from entry__c where contest__c =: prize.contest__c and Sequence_Number__c in: winnerKeys and Prize_Won__c = null and User__c = null and isDeleted=false] ;
+				system.debug('winner key count :' + winnerKeys.size());
 
-		list<entry__c> potentialWinners = new list<entry__c>();
-		potentialWinners.addAll(winnersWithoutPics);
-		potentialWinners.addAll(winnersWithPics);
+				list<entry__c> winnersWithPics = [select id, Entrant_Name__c, User__r.SmallPhotoUrl, User__r.MediumPhotoUrl, Prize_Won__c from entry__c where contest__c =: prize.contest__c and Sequence_Number__c in: winnerKeys and Prize_Won__c = null and User__c != null and isDeleted=false];
+				list<entry__c> winnersWithoutPics = [select id, Entrant_Name__c, Prize_Won__c from entry__c where contest__c =: prize.contest__c and Sequence_Number__c in: winnerKeys and Prize_Won__c = null and User__c = null and isDeleted=false] ;
 
-		//system.assertEquals(targetEntries, potentialWinners.size());
-		if (targetEntries != potentialWinners.size()){
-			throw new AuraHandledException('There is a problem with the sequence numbers on the entries.  Did you delete one?');
+				potentialWinners.addAll(winnersWithoutPics);
+				potentialWinners.addAll(winnersWithPics);
+
+				//system.assertEquals(targetEntries, potentialWinners.size());
+				if (targetEntries != potentialWinners.size()){
+					throw new AuraHandledException('There is a problem with the sequence numbers on the entries.  Did you delete one?');
+				}
+			} else {
+				//there's just not that many--let's build a list of loser keys to reject.  Also include the excluded
+
+				set<integer> loserKeys = new set<integer>();
+				set<integer> existingWinners = getExistingWinnerKeys(prize.Contest__c);
+
+				loserKeys.addAll(existingWinners);
+
+				//entry count is just the non-winners so far
+				integer entriesToStrike = entryCount + existingWinners.size() - targetEntries;
+
+				do {
+					loserKeys.add(getWinnerKey(entryCount, existingWinners));
+				} while (loserKeys.size()<entriesToStrike);
+
+				list<entry__c> winnersWithPics = [select id, Entrant_Name__c, User__r.SmallPhotoUrl, User__r.MediumPhotoUrl, Prize_Won__c from entry__c where contest__c =: prize.contest__c and Sequence_Number__c NOT in: loserKeys and Prize_Won__c = null and User__c != null and isDeleted=false];
+				list<entry__c> winnersWithoutPics = [select id, Entrant_Name__c, Prize_Won__c from entry__c where contest__c =: prize.contest__c and Sequence_Number__c NOT in: loserKeys and Prize_Won__c = null and User__c = null and isDeleted=false] ;
+
+				potentialWinners.addAll(winnersWithoutPics);
+				potentialWinners.addAll(winnersWithPics);
+
+				//system.assertEquals(targetEntries, potentialWinners.size());
+				if (targetEntries != potentialWinners.size()){
+					throw new AuraHandledException('There is a problem with the sequence numbers on the entries.  Did you delete one?');
+				}
+			}
+
+		} else {
+			list<entry__c> winnersWithPics = [select id, Entrant_Name__c, User__r.SmallPhotoUrl, User__r.MediumPhotoUrl, Prize_Won__c from entry__c where contest__c =: prize.contest__c and Prize_Won__c = null and User__c != null and isDeleted=false];
+			list<entry__c> winnersWithoutPics = [select id, Entrant_Name__c, Prize_Won__c from entry__c where contest__c =: prize.contest__c and Prize_Won__c = null and User__c = null and isDeleted=false] ;
+
+			potentialWinners.addAll(winnersWithoutPics);
+			potentialWinners.addAll(winnersWithPics);
 		}
-		return JSON.serialize(potentialWinners);
 
+		return JSON.serialize(potentialWinners);
 	}
 
 

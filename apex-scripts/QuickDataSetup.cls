@@ -54,11 +54,14 @@ for (drawings__contest__c cont:contests){
 insert prizes;
 
 list<drawings__entry__c> entries = new list<drawings__entry__c>();
-for (user u:[select id from user where usertype = 'Standard']){
-  drawings__entry__c entry = new drawings__entry__c();
-  entry.drawings__User__c = u.id;
-  entry.drawings__contest__c = contests[0].id;
-  entries.add(entry);
+list<user> users = [select id from user where usertype = 'Standard' limit 1200];
+for (user u:users){
+  for (integer k = 0; k<math.round(1200/users.size()); k++){
+    drawings__entry__c entry = new drawings__entry__c();
+    entry.drawings__User__c = u.id;
+    entry.drawings__contest__c = contests[0].id;
+    entries.add(entry);
+  }
 }
 for (user u:[select id from user where (usertype = 'PowerCustomerSuccess' OR usertype = 'PowerPartner')]){
 	drawings__entry__c entry = new drawings__entry__c();
