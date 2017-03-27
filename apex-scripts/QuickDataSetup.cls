@@ -45,6 +45,8 @@ for (drawings__contest__c cont:contests){
   prizes.add(prize);
 }
 
+insert prizes;
+
 list<drawings__entry__c> entries = new list<drawings__entry__c>();
 for (user u:[select id from user where usertype = 'Standard']){
   drawings__entry__c entry = new drawings__entry__c();
