@@ -37,6 +37,7 @@ global with sharing class Drawings {
 
 	@AuraEnabled
 	global static string drawLocallySingle(string prizeId){
+		accessCheck();
 		//we'll return this!
 		list<entry__c> potentialWinners = new list<entry__c>();
 
@@ -119,6 +120,8 @@ global with sharing class Drawings {
 	//award all the prizes for the entire contest
 	@AuraEnabled
 	global static void drawAll(string contestId){
+		accessCheck();
+
 		//first, get all the prizes
 		integer totalPrizeCount = 0;
 		list<prize__c> prizes = [select id, Awarded__c, Quantity__c from prize__c where contest__c =: contestId];
@@ -185,6 +188,7 @@ global with sharing class Drawings {
 	//draw one instance of a prize
 	@AuraEnabled
 	global static string drawSinglePrize(string prizeId){
+		accessCheck();
 		prize__c prize = getPrize(prizeId);
 
 		integer prizesLeft = remainingPrizes(prize.Id, integer.valueOf(prize.Quantity__c), prize.Contest__c);
@@ -274,6 +278,20 @@ global with sharing class Drawings {
 			throw new AuraHandledException('There are no entries left that haven\'t already won a prize');
 		}
 		return count;
+	}
+
+	//verify that the user has access to manage this contest
+	@TestVisible
+	private static boolean accessCheck(){
+		if (
+				!Schema.sObjectType.Drawings__Entry__c.fields.Drawings__Prize_Won__c.isUpdateable()
+				||
+				!Schema.sObjectType.Drawings__Prize__c.fields.Drawings__Awarded__c.isUpdateable()
+			){
+			throw new AuraHandledException('You do not have the required permissions.');
+			return false;
+		}
+		return true;
 	}
 
 	@TestVisible
