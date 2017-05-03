@@ -18,11 +18,8 @@
 				$A.get("e.force:refreshView").fire();
 				$A.get("e.force:closeQuickAction").fire();
 			}  else if (state === "ERROR") {
-				let appEvent = $A.get("e.c:handleCallbackError");
-				appEvent.setParams({
-					"errors" : a.getError()
-				});
-				appEvent.fire();
+				component.find('leh').passErrors(a.getError());
+				$A.get("e.force:closeQuickAction").fire();
 			}
 		});
 		$A.enqueueAction(action);

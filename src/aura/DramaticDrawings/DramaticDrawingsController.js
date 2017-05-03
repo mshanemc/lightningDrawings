@@ -4,7 +4,8 @@
 ({
 	doInit : function(component, undefined, helper) {
 		//basic geometry setup for responsive layout
-		const thisComp = document.getElementsByClassName('dramatic')[0];
+		//const thisComp = document.getElementsByClassName('dramatic')[0];
+		const thisComp = component.find('dramaticDrawingHolder').getElement();
 		const width = thisComp.offsetWidth;
 		const height = thisComp.offsetHeight;
 		const center = {x: width / 2, y: height / 2};
@@ -156,11 +157,7 @@
 								component.set("v.awarded", true);
 								clearInterval(reducer);
 							} else if (state === "ERROR") {
-								let appEvent = $A.get("e.c:handleCallbackError");
-								appEvent.setParams({
-									"errors" : a.getError()
-								});
-								appEvent.fire();
+								component.find('leh').passErrors(a.getError());
 							}
 						});
 						$A.enqueueAction(saveTheWinner);
@@ -176,11 +173,7 @@
 
 
 			} else if (state === "ERROR") {
-				let appEvent = $A.get("e.c:handleCallbackError");
-				appEvent.setParams({
-					"errors" : a.getError()
-				});
-				appEvent.fire();
+				component.find('leh').passErrors(a.getError());
 			}
 		});
 		$A.enqueueAction(action);
@@ -234,7 +227,7 @@
 	},
 
 	destoryCmp : function (component) {
-      component.destroy();
+    component.destroy();
   },
 
 })

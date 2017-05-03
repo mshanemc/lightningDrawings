@@ -10,9 +10,9 @@
 
 	<aura:handler event="aura:locationChange" action="{!c.destoryCmp}"/>
 
-	<c:LightningErrorHandler />
+	<c:LightningErrorHandler aura:id="leh"/>
 
-	<div class="dramatic">
+	<div class="dramatic" aura:id="dramaticDrawingHolder">
 		<div class="slds-text-heading--large slds-p-around--large">{!v.prize.Name}</div>
 		<aura:if isTrue="{!v.awarded}">
 			<lightning:button variant="neutral" label="Return to Prize Page" onclick="{! c.navToRecord }" class="navButton slds-m-around--large"/>

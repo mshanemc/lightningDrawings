@@ -52,11 +52,7 @@
 					d3.select(".dramatic").attr('style', 'background-image : url("'+prizeResult.drawings__Prize_Image__c+'")');
 				}
 			} else if (state === "ERROR") {
-				let appEvent = $A.get("e.c:handleCallbackError");
-				appEvent.setParams({
-					"errors" : a.getError()
-				});
-				appEvent.fire();
+				component.find('leh').passErrors(a.getError());
 			}
 		});
 

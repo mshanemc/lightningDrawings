@@ -1,14 +1,41 @@
 global with sharing class Drawings {
 
 	@AuraEnabled
+	global static contact easyEntryContact (string first, string last, id contestId){
+		accessCheck();
+		accountContactAccessCheck();
+		//find (or create) the "magic" contest account
+		list<contest__c> contests = [select name from contest__c where id=:contestId];
+		list<account> magicAccounts = [select id from account where name =: contests[0].name];
+		account magicAccount = new account();
+
+		if (magicAccounts.size()>0){
+			magicAccount = magicAccounts[0];
+		} else {
+			magicAccount.Name = contests[0].name;
+			insert magicAccount;
+		}
+
+		contact c = new Contact();
+		c.FirstName = first;
+		c.LastName = last;
+		c.AccountId = magicAccount.Id;
+
+		insert c;
+		//enqueue the user creating job! 	public QCreateUserFromContact(contact c, id contestId) {
+		system.enqueueJob(new QCreateUserFromContact(c, contestId));
+		return c;
+	}
+
+	@AuraEnabled
 	global static integer manualSequence (string contestId){
 		//	global static integer numberStuff(id localContestId){
-
 		return DrawingsDataPrep.numberStuff(contestId);
 	}
 
 	@AuraEnabled
 	global static void setWinner (string prizeId, string entryId){
+		accessCheck();
 		entry__c winner = [select id, Prize_Won__c from entry__c where id=:entryId];
 		winner.Prize_Won__c = prizeId;
 		try {
@@ -21,6 +48,7 @@ global with sharing class Drawings {
 
 	@future
 	global static void checkRemoteAwarded (string prizeId){
+		accessCheck();
 		prize__c prize = getPrize(prizeId);
 		integer left = remainingPrizes(prize.Id, integer.valueOf(prize.Quantity__c), prize.Contest__c);
 		if (left==0){ //this is the last one!!
@@ -32,6 +60,7 @@ global with sharing class Drawings {
 	//pulls down max of 1000 random entries to the client, where the component will manage the selection.  For dramatic effect
 	@AuraEnabled
 	global static prize__c getLocalPrize(string prizeId){
+		accessCheck();
 		return [select Name, Prize_Image__c from prize__c where id =: prizeId];
 	}
 
@@ -218,6 +247,7 @@ global with sharing class Drawings {
 	//draw all the instances of this prize
 	@AuraEnabled
 	global static list<string> drawThisPrize(string prizeId){
+		accessCheck();
 		prize__c prize = getPrize(prizeId);
 		// 	private static integer remainingPrizes(id prizeId, integer prizeQuantity, id contestId){
 
@@ -241,6 +271,7 @@ global with sharing class Drawings {
 		} while (winnerKeys.size()<prizesLeft);
 
 		system.assertEquals(winnerKeys.size(), prizesLeft);
+
 		winners = [select id, Entrant_Name__c, Prize_Won__c from entry__c where contest__c =: prize.contest__c and Sequence_Number__c in: winnerKeys and Prize_Won__c = null];
 
 		//set the prize
@@ -280,17 +311,72 @@ global with sharing class Drawings {
 		return count;
 	}
 
-	//verify that the user has access to manage this contest
-	@TestVisible
-	private static boolean accessCheck(){
-		if (
-				!Schema.sObjectType.Drawings__Entry__c.fields.Drawings__Prize_Won__c.isUpdateable()
-				||
-				!Schema.sObjectType.Drawings__Prize__c.fields.Drawings__Awarded__c.isUpdateable()
-			){
-			throw new AuraHandledException('You do not have the required permissions.');
-			return false;
+	public static boolean accountContactAccessCheck(){
+		if (!Schema.sObjectType.Account.fields.Name.isAccessible()){
+			throw new AuraHandledException('You do not have the required permissions (access account>name)'); return false;
 		}
+		if (!Schema.sObjectType.Account.fields.Name.isCreateable()){
+			throw new AuraHandledException('You do not have the required permissions (create account>name)'); return false;
+		}
+		if (!Schema.sObjectType.Contact.fields.FirstName.isCreateable()){
+			throw new AuraHandledException('You do not have the required permissions (create contact>first name)'); return false;
+		}
+		if (!Schema.sObjectType.Contact.fields.LastName.isCreateable()){
+			throw new AuraHandledException('You do not have the required permissions (create contact>last name)'); return false;
+		}
+		if (!Schema.sObjectType.Contact.fields.AccountId.isCreateable()){
+			throw new AuraHandledException('You do not have the required permissions (create contact>accountId)'); return false;
+		}
+		return true;
+	}
+	//verify that the user has access to manage this contest
+	public static boolean accessCheck(){
+		if (!Schema.sObjectType.Drawings__Entry__c.fields.Drawings__Prize_Won__c.isUpdateable()){
+			throw new AuraHandledException('You do not have the required permissions (update entry>prize won)'); return false;
+		}
+		if (!Schema.sObjectType.Drawings__Entry__c.fields.Drawings__Entrant_Name__c.isAccessible()){
+			throw new AuraHandledException('You do not have the required permissions.(access entry>entrant name'); return false;
+		}
+		if(!Schema.sObjectType.Drawings__Entry__c.fields.Drawings__User__c.isAccessible()){
+			throw new AuraHandledException('You do not have the required permissions.(access entry>user'); return false;
+		}
+		if(!Schema.sObjectType.Drawings__Entry__c.fields.Drawings__Sequence_Number__c.isAccessible()){
+			throw new AuraHandledException('You do not have the required permissions.(access entry>sequence number'); return false;
+		}
+		if(!Schema.sObjectType.Drawings__Entry__c.fields.Id.isAccessible()){
+			throw new AuraHandledException('You do not have the required permissions.(access entry>Id'); return false;
+		}
+		if(!Schema.sObjectType.Drawings__Entry__c.fields.Drawings__Contest__c.isAccessible()){
+			throw new AuraHandledException('You do not have the required permissions.(access entry>contest'); return false;
+		}
+		if(!Schema.sObjectType.Drawings__Prize__c.fields.Drawings__Awarded__c.isUpdateable()){
+			throw new AuraHandledException('You do not have the required permissions.(update prize>awarded'); return false;
+		}
+		if(!Schema.sObjectType.Drawings__Prize__c.fields.Drawings__Prize_Image__c.isAccessible()){
+			throw new AuraHandledException('You do not have the required permissions.(access prize>prize image'); return false;
+		}
+		if(!Schema.sObjectType.Drawings__Prize__c.fields.Drawings__Quantity__c.isAccessible()){
+			throw new AuraHandledException('You do not have the required permissions.(access prize>quantity'); return false;
+		}
+		if(!Schema.sObjectType.Drawings__Prize__c.fields.Name.isAccessible()){
+			throw new AuraHandledException('You do not have the required permissions.(access prize> name'); return false;
+		}
+		if(!Schema.sObjectType.Drawings__Prize__c.fields.Drawings__Quantity__c.isAccessible()){
+			throw new AuraHandledException('You do not have the required permissions.(access prize>quantity'); return false;
+		}
+		if(!Schema.sObjectType.Drawings__Prize__c.fields.Drawings__Contest__c.isAccessible()){
+			throw new AuraHandledException('You do not have the required permissions.(access prize>contest'); return false;
+		}
+		//if(Schema.sObjectType.Drawings__Prize__c.fields.Id.isAccessible()){
+		//	throw new AuraHandledException('You do not have the required permissions.(access prize>Id'); return false;
+		//}
+		if(!Schema.sObjectType.User.fields.SmallPhotoUrl.isAccessible()){
+			throw new AuraHandledException('You do not have the required permissions.(access user>small photo url'); return false;
+		}
+		if(!Schema.sObjectType.User.fields.MediumPhotoUrl.isAccessible()){
+			throw new AuraHandledException('You do not have the required permissions.(access user>medium photo url'); return false;
+		}
+
 		return true;
 	}
 

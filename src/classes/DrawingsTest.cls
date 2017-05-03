@@ -282,6 +282,8 @@ private class DrawingsTest {
 		}
 		insert entries;
 
+
+
 		//integer numberingResult = DrawingsDataPrep.numberStuff(cont.Id);
 		//system.assertEquals(numberingResult, 0);
 
@@ -291,7 +293,6 @@ private class DrawingsTest {
 			list<user> users = new list<user>();
 
 			Profile p = [SELECT Id FROM Profile WHERE Name='Standard User'];
-
 
 			for (integer i=0; i<numberOfUsers; i++){
 				string x = string.valueOf(i);

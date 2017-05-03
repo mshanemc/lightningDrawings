@@ -1,0 +1,10 @@
+<aura:component controller="Drawings" implements="force:hasRecordId, force:lightningQuickAction">
+	<aura:attribute name="first" type="string" required="false" access="global"/>
+	<aura:attribute name="last" type="string" required="false" access="global"/>
+
+	<lightning:input value="{!v.first}" label="First Name" />
+	<lightning:input value="{!v.last}" label="Last Name" />
+
+	<lightning:button onclick="{!c.save}" variant="brand" label="Submit" class="slds-m-top--medium"/>
+
+</aura:component>

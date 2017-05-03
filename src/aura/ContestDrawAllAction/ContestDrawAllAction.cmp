@@ -2,6 +2,6 @@
 
 	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
 
-	<c:LightningErrorHandler />
+	<c:LightningErrorHandler aura:id="leh"/>
 
 </aura:component>
