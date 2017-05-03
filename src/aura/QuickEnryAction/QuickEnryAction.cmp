@@ -1,4 +1,4 @@
-<aura:component controller="Drawings" implements="force:hasRecordId, force:lightningQuickAction">
+<aura:component controller="Drawings" implements="force:hasRecordId,force:lightningQuickAction">
 	<aura:attribute name="first" type="string" required="false" access="global"/>
 	<aura:attribute name="last" type="string" required="false" access="global"/>
 
